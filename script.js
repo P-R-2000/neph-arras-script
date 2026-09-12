@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Arras.io Time Travel
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Restores the Arras.io client before the March 22nd 2018 update.
 // @author       P-R-2000, ContentArras, AE0hello (before retiring)
 // @match        https://arras.io/
@@ -19,7 +19,7 @@ console.log = function () {
   throw "prevented wasm from running";
 }; // load the game code
 function start() {
-  window.buildDate = 1789233846388;
+  window.buildDate = 1789239701588;
   document.documentElement.innerHTML = `<!DOCTYPE html><html lang="en" id="mainBody"><head><link href="https://fonts.googleapis.com/css?family=Ubuntu:400,700" rel="stylesheet"> 
 
 <style type="text/css">
@@ -951,6 +951,9 @@ input [type=&quot;image&quot;]:focus{
     <li>This Arras.io Client is very far from being finished, expect bugs missing features and more!</li>
     <li>While playing on this client you might get banned so be aware of that!</li>
 </ul><hr><br></update>
+<b>PATCH 2026.09.12.01</b><ul>
+    <li>Fixed the constant status fetch when no server is selected.</li>
+</ul><hr><br>
 <b>PATCH 2026.09.09.01</b><ul>
     <li>Added mspt to server speed.</li>
     <li>On spawn you will get 2 extra warning messages.</li>
@@ -3135,7 +3138,6 @@ input [type=&quot;image&quot;]:focus{
         aa();
       })["catch"](b => {
         console.error(b);
-        Y("https://kvn3s3cpcdk4fl6j-c.uvwx.xyz:8443/2222/status");
       });
     }
     Y("https://qrp6ujau11f36bnm-c.uvwx.xyz:8443/2222/status");
