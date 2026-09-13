@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Arras.io Time Travel
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  Restores the Arras.io client before the March 22nd 2018 update.
 // @author       P-R-2000, ContentArras, AE0hello (before retiring)
 // @match        https://arras.io/
@@ -19,7 +19,7 @@ console.log = function () {
   throw "prevented wasm from running";
 }; // load the game code
 function start() {
-  window.buildDate = 1789239701588;
+  window.buildDate = 1789299155082;
   document.documentElement.innerHTML = `<!DOCTYPE html><html lang="en" id="mainBody"><head><link href="https://fonts.googleapis.com/css?family=Ubuntu:400,700" rel="stylesheet"> 
 
 <style type="text/css">
@@ -952,7 +952,13 @@ input [type=&quot;image&quot;]:focus{
     <li>While playing on this client you might get banned so be aware of that!</li>
 </ul><hr><br></update>
 <b>PATCH 2026.09.12.01</b><ul>
+    <li>When saving score, the save code is copied to your clipboard.</li>
+    <li>You can now respawn using Enter again.</li>
+    <li>Added respawn cooldown.</li>
+</ul><hr><br>
+<b>PATCH 2026.09.12.01</b><ul>
     <li>Fixed the constant status fetch when no server is selected.</li>
+    <li>Added Cloudflare turnsile.</li>
 </ul><hr><br>
 <b>PATCH 2026.09.09.01</b><ul>
     <li>Added mspt to server speed.</li>
@@ -2136,6 +2142,12 @@ input [type=&quot;image&quot;]:focus{
                     return;
                   }
                   this.parent.socket.talk(r.M(c));
+                }
+                if (a.died) {
+                  if (a.respawnTime <= 0) {
+                    this.parent.socket.talk(r.s(a.playerName));
+                    a.died = !1;
+                  }
                 }
               }
               break;
@@ -3885,6 +3897,20 @@ input [type=&quot;image&quot;]:focus{
                 }
               case "F":
                 {
+                  console.log(k);
+                  if (k.saveCode) {
+                    prompt("Your save code is " + k.saveCode + "!\nIt has been automatically copied to your clipboard!", k.saveCode);
+                    navigator.clipboard.writeText(k.saveCode);
+                  }
+                  if (k.respawnTime) {
+                    const H = Date.now() + k.respawnTime,
+                      K = setInterval(() => {
+                        a.respawnTime = Math.max(-1, H - Date.now());
+                        if (a.respawnTime < 0) {
+                          clearInterval(K);
+                        }
+                      }, 50);
+                  }
                   a.finalScore = ah(0, 4);
                   a.finalScore.set(k.score);
                   a.finalLifetime = ah(0, 5);
@@ -3896,9 +3922,6 @@ input [type=&quot;image&quot;]:focus{
                   a.finalKillers = [];
                   for (let v = 0; v < k.killers.length; v++) a.finalKillers.push(k.killers[v]);
                   a.died = !0;
-                  window.onbeforeunload = () => {
-                    return !1;
-                  };
                 }
                 break;
               case "m":
@@ -3913,27 +3936,27 @@ input [type=&quot;image&quot;]:focus{
                 break;
               case "M":
                 {
-                  const H = J.find(d => {
+                  const L = J.find(d => {
                     return d.id == k.entityId;
                   });
-                  if (H) {
-                    (H.chatMsgs ??= []).push([k.message, Date.now()]);
+                  if (L) {
+                    (L.chatMsgs ??= []).push([k.message, Date.now()]);
                   }
                 }
                 break;
               case "P":
                 {
-                  const K = Array.isArray(k.changed) ? k.changed : [k.changed];
-                  for (const L of K) if (L && L.socketId != null) {
-                    const N = a.playerList.get(L.socketId) || {};
-                    a.playerList.set(L.socketId, {
-                      ...N,
-                      ...L
+                  const N = Array.isArray(k.changed) ? k.changed : [k.changed];
+                  for (const O of N) if (O && O.socketId != null) {
+                    const Q = a.playerList.get(O.socketId) || {};
+                    a.playerList.set(O.socketId, {
+                      ...Q,
+                      ...O
                     });
                   }
-                  const O = Array.isArray(k.removed) ? k.removed : [k.removed];
-                  for (const L of O) if (L && L.socketId != null) {
-                    a.playerList["delete"](L.socketId);
+                  const S = Array.isArray(k.removed) ? k.removed : [k.removed];
+                  for (const O of S) if (O && O.socketId != null) {
+                    a.playerList["delete"](O.socketId);
                   }
                 }
                 break;
@@ -4011,9 +4034,6 @@ input [type=&quot;image&quot;]:focus{
         return an.iterate(a.socket.cmd.getMotion());
       }, 1e3 / 30);
       document.getElementById("gameCanvas").focus();
-      window.onbeforeunload = () => {
-        return !0;
-      };
     }
     function aq(b, c) {
       ad.fillStyle = b;
@@ -4856,7 +4876,7 @@ input [type=&quot;image&quot;]:focus{
           c.time.draw("\u231A Survived for " + b.timeForHumans(Math.round(a.finalLifetime.get())) + ".", f - 170, g + 55, 16, C.guiwhite);
           c.kills.draw(d(), f - 170, g + 77, 16, C.guiwhite);
           c.death.draw(e(), f - 170, g + 99, 16, C.guiwhite);
-          c.playagain.draw("Reload to play again.", f, g + 125, 16, C.guiwhite, "center");
+          a.respawnTime > 0 ? c.playagain.draw("Wait " + (a.respawnTime / 1e3).toFixed(1) + " seconds to play again!", f, g + 125, 16, C.guiwhite, "center") : c.playagain.draw("Press enter to play again!", f, g + 125, 16, C.guiwhite, "center");
         };
       })(),
       aA = (() => {
