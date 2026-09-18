@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Arras.io Time Travel
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @description  Restores the Arras.io client before the March 22nd 2018 update.
 // @author       P-R-2000, ContentArras, AE0hello (before retiring)
 // @match        https://arras.io/
@@ -18,7 +18,7 @@ console.log = function () {
   throw "prevented wasm from running";
 }; // load the game code
 function start() {
-  window.buildDate = 1789753117324;
+  window.buildDate = 1789753285719;
   document.documentElement.innerHTML = `<!DOCTYPE html><html lang="en" id="mainBody"><head><link href="https://fonts.googleapis.com/css?family=Ubuntu:400,700" rel="stylesheet"> 
 
 <style type="text/css">
@@ -950,15 +950,7 @@ input [type=&quot;image&quot;]:focus{
     <li>This Arras.io Client is very far from being finished, expect bugs missing features and more!</li>
     <li>While playing on this client you might get banned so be aware of that!</li>
 </ul><hr><br></update>
-<b>PATCH 2026.09.15.01</b><ul>
-    <li>Fixed skills being shown in reverse.</li>
-    <li>Fixed Leaderboard.</li>
-    <li>You now respawn with Auto Level Up or Incognito Mode properly.</li>
-    <li>Fixed latency.</li>
-    <li>The Server Speed will now properly change colors when the server is getting overloaded.</li>
-    <li>When an tank doesn't have an upgrade key the square brackets aren't displayed.</li>
-</ul><hr><br>
-<b>PATCH 2026.09.12.01</b><ul>
+<b>PATCH 2026.09.18.01</b><ul>
     <li>When saving score, the save code is copied to your clipboard.</li>
     <li>You can now respawn using Enter again.</li>
     <li>Added respawn cooldown.</li>
